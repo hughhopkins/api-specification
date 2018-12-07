@@ -1,0 +1,454 @@
+---
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: "Application API"
+  description: Nexmo provides an Application API to allow programattic management of your Nexmo Applications
+  contact:
+    name: Nexmo
+    url: 'https://developer.nexmo.com/'
+    email: devrel@nexmo.com
+servers:
+  - url: https://api.nexmo.com
+security:
+  - basicAuth: []
+paths:
+  /v2/application:
+    post:
+      summary: Create an application
+      operationId: createApplication
+      x-group: application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - name
+              properties:
+                name:
+                  description: "Application Name"
+                  example: "Demo Application"
+                  type: "string"
+                keys:
+                  type: object
+                  properties:
+                    public_key:
+                      type: string
+                      example: |
+                          -----BEGIN PUBLIC KEY-----
+                          MIIBIjANBgkqhkiG9w0BAQEFAAOCA
+                          KOxjsU4pf/sMFi9N0jqcSLcjxu33G
+                          d/vynKnlw9SENi+UZR44GdjGdmfm1
+                          tL1eA7IBh2HNnkYXnAwYzKJoa4eO3
+                          0kYWekeIZawIwe/g9faFgkev+1xsO
+                          OUNhPx2LhuLmgwWSRS4L5W851Xe3f
+                          UQIDAQAB
+                          -----END PUBLIC KEY-----
+                      description: Public key
+                capabilities:
+                  type: object
+                  properties:
+                    voice:
+                      type: object
+                      properties:
+                        webhooks:
+                          type: object
+                          properties:
+                            answer_url:
+                              type: object
+                              properties:
+                                address:
+                                  type: string
+                                  example: https://example.com/webhooks/answer
+                                http_method:
+                                  type: string
+                                  example: GET
+                            event_url:
+                              type: object
+                              properties:
+                                address:
+                                  type: string
+                                  example: https://example.com/webhooks/status
+                                http_method:
+                                  type: string
+                                  example: POST
+                    rtc:
+                      type: object
+                      properties:
+                        webhooks:
+                          type: object
+                          properties:
+                            event_url:
+                              type: object
+                              properties:
+                                address:
+                                  type: string
+                                  example: https://example.com/webhooks/event
+                                http_method:
+                                  type: string
+                                  example: POST
+                    messages:
+                      type: object
+                      properties:
+                        webhooks:
+                          type: object
+                          properties:
+                            inbound_url:
+                              type: object
+                              properties:
+                                address:
+                                  type: string
+                                  example: https://example.com/webhooks/inbound
+                                http_method:
+                                  type: string
+                                  example: POST
+                            status_url:
+                              type: object
+                              properties:
+                                address:
+                                  type: string
+                                  example: https://example.com/webhooks/event
+                                http_method:
+                                  type: string
+                                  example: POST
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApplicationResponse'
+                  - type: object
+                    properties:
+                      keys:
+                        type: object
+                        properties:
+                          public_key:
+                            type: string
+                            example: |
+                              -----BEGIN PUBLIC KEY-----
+                              MIIBIjANBgkqhkiG9w0BAQEFAAOCA
+                              KOxjsU4pf/sMFi9N0jqcSLcjxu33G
+                              d/vynKnlw9SENi+UZR44GdjGdmfm1
+                              tL1eA7IBh2HNnkYXnAwYzKJoa4eO3
+                              0kYWekeIZawIwe/g9faFgkev+1xsO
+                              OUNhPx2LhuLmgwWSRS4L5W851Xe3f
+                              UQIDAQAB
+                              -----END PUBLIC KEY-----
+                          private_key:
+                            type: string
+                            example: |
+                              -----BEGIN PRIVATE KEY-----
+                              MIIEvQIBADANBgkqhkiG9w0BAQEFA
+                              ASCBKcwggSjAgEAAoIBAQDEPpvi+3
+                              RH1efQ\nkveWzZDrNNoEXmBw61w+O
+                              0u/N36tJnN5XnYecU64yHzu2ByEr0
+                              7iIvYbavFnADwl\nHMTJwqDQakpa3
+                              8/SFRnTDq3zronvNZ6nOp7S6K7pcZ
+                              rw/CvrL6hXT1x7cGBZ4jPx\nqhjqY
+                              uJPgZD7OVB69oYOV92vIIJ7JLYwqb
+                              -----END PRIVATE KEY-----
+        '400':
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                properties:
+                  type:
+                    type: string
+                    example: BAD_REQUEST
+                  title:
+                    type: string
+                    example: BAD_REQUEST
+                  detail:
+                    type: string
+                    example: name is required
+    get:
+      operationId: listApplication
+      summary: List available applications
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                properties:
+                  page_size:
+                    type: integer
+                    example: 10
+                  page:
+                    type: integer
+                    example: 1
+                  total_items:
+                    type: integer
+                    example: 6
+                  total_pages:
+                    type: integer
+                    example: 1
+                  _embedded:
+                    type: object
+                    properties:
+                      applications:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ApplicationResponse'
+
+  /v2/application/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: The ID of the application
+        schema:
+          type: string
+    get:
+      operationId: getApplication
+      summary: Get an application
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationResponse'
+
+    put:
+      summary: Update an application
+      operationId: updateApplication
+      x-group: application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - name
+              properties:
+                name:
+                  description: "Application Name"
+                  example: "Demo Application"
+                  type: "string"
+                keys:
+                  type: object
+                  properties:
+                    public_key:
+                      type: string
+                      example: |
+                          -----BEGIN PUBLIC KEY-----
+                          MIIBIjANBgkqhkiG9w0BAQEFAAOCA
+                          KOxjsU4pf/sMFi9N0jqcSLcjxu33G
+                          d/vynKnlw9SENi+UZR44GdjGdmfm1
+                          tL1eA7IBh2HNnkYXnAwYzKJoa4eO3
+                          0kYWekeIZawIwe/g9faFgkev+1xsO
+                          OUNhPx2LhuLmgwWSRS4L5W851Xe3f
+                          UQIDAQAB
+                          -----END PUBLIC KEY-----
+                      description: Public key
+                capabilities:
+                  type: object
+                  properties:
+                    voice:
+                      type: object
+                      properties:
+                        webhooks:
+                          type: object
+                          properties:
+                            answer_url:
+                              type: object
+                              properties:
+                                address:
+                                  type: string
+                                  example: https://example.com/webhooks/answer
+                                http_method:
+                                  type: string
+                                  example: GET
+                            event_url:
+                              type: object
+                              properties:
+                                address:
+                                  type: string
+                                  example: https://example.com/webhooks/status
+                                http_method:
+                                  type: string
+                                  example: POST
+                    rtc:
+                      type: object
+                      properties:
+                        webhooks:
+                          type: object
+                          properties:
+                            event_url:
+                              type: object
+                              properties:
+                                address:
+                                  type: string
+                                  example: https://example.com/webhooks/event
+                                http_method:
+                                  type: string
+                                  example: POST
+                    messages:
+                      type: object
+                      properties:
+                        webhooks:
+                          type: object
+                          properties:
+                            inbound_url:
+                              type: object
+                              properties:
+                                address:
+                                  type: string
+                                  example: https://example.com/webhooks/inbound
+                                http_method:
+                                  type: string
+                                  example: POST
+                            status_url:
+                              type: object
+                              properties:
+                                address:
+                                  type: string
+                                  example: https://example.com/webhooks/event
+                                http_method:
+                                  type: string
+                                  example: POST
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApplicationResponse'
+                  - type: object
+                    properties:
+                      keys:
+                        type: object
+                        properties:
+                          public_key:
+                            type: string
+                            example: |
+                              -----BEGIN PUBLIC KEY-----
+                              MIIBIjANBgkqhkiG9w0BAQEFAAOCA
+                              KOxjsU4pf/sMFi9N0jqcSLcjxu33G
+                              d/vynKnlw9SENi+UZR44GdjGdmfm1
+                              tL1eA7IBh2HNnkYXnAwYzKJoa4eO3
+                              0kYWekeIZawIwe/g9faFgkev+1xsO
+                              OUNhPx2LhuLmgwWSRS4L5W851Xe3f
+                              UQIDAQAB
+                              -----END PUBLIC KEY-----
+                          private_key:
+                            type: string
+                            example: |
+                              -----BEGIN PRIVATE KEY-----
+                              MIIEvQIBADANBgkqhkiG9w0BAQEFA
+                              ASCBKcwggSjAgEAAoIBAQDEPpvi+3
+                              RH1efQ\nkveWzZDrNNoEXmBw61w+O
+                              0u/N36tJnN5XnYecU64yHzu2ByEr0
+                              7iIvYbavFnADwl\nHMTJwqDQakpa3
+                              8/SFRnTDq3zronvNZ6nOp7S6K7pcZ
+                              rw/CvrL6hXT1x7cGBZ4jPx\nqhjqY
+                              uJPgZD7OVB69oYOV92vIIJ7JLYwqb
+                              -----END PRIVATE KEY-----
+    delete:
+      operationId: deleteApplication
+      x-group: application
+      summary: Delete an application
+      responses:
+        '204':
+          description: Success
+
+x-groups:
+  application:
+    name: Application
+    order: 1
+    description: Manage your Nexmo applications
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+
+  schemas:
+    ApplicationResponse:
+     properties:
+       id:
+         type: string
+       name:
+         type: string
+       capabilities:
+         type: object
+         properties:
+           voice:
+             type: object
+             properties:
+               webhooks:
+                 type: object
+                 properties:
+                   answer_url:
+                     type: object
+                     properties:
+                       address:
+                         type: string
+                         example: https://example.com/webhooks/answer
+                       http_method:
+                         type: string
+                         example: POST
+                   event_url:
+                     type: object
+                     properties:
+                       address:
+                         type: string
+                         example: https://example.com/webhooks/event
+                       http_method:
+                         type: string
+                         example: POST
+           messages:
+             type: object
+             properties:
+               webhooks:
+                 type: object
+                 properties:
+                   inbound_url:
+                     type: object
+                     properties:
+                       address:
+                         type: string
+                         example: https://example.com/webhooks/inbound
+                       http_method:
+                         type: string
+                         example: POST
+                   status_url:
+                     type: object
+                     properties:
+                       address:
+                         type: string
+                         example: https://example.com/webhooks/status
+                       http_method:
+                         type: string
+                         example: POST
+           rtc:
+             type: object
+             properties:
+               webhooks:
+                 type: object
+                 properties:
+                   answer_url:
+                     type: object
+                     properties:
+                       address:
+                         type: string
+                         example: https://example.com/webhooks/answer
+                       http_method:
+                         type: string
+                         example: POST
+                   event_url:
+                     type: object
+                     properties:
+                       address:
+                         type: string
+                         example: https://example.com/webhooks/event
+                       http_method:
+                         type: string
+                         example: POST
