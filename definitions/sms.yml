@@ -5,8 +5,8 @@ info:
   description: With the Nexmo SMS API you can send SMS from your account and lookup messages both messages that you've sent as well as messages sent to your virtual numbers. Numbers are specified in E.164 format.
   contact:
     name: Nexmo DevRel
-    url: https://developer.nexmo.com
     email: devrel@nexmo.com
+    url: 'https://developer.nexmo.com/'
 servers:
   - url: https://rest.nexmo.com
 paths:

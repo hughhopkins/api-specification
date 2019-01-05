@@ -5,9 +5,9 @@ info:
   description: The Media API can be used to query, download and delete media items such as audio files for use with other Nexmo APIs.
   x-label: 'BETA'
   contact:
-    name: Nexmo
-    url: 'https://developer.nexmo.com/'
+    name: Nexmo DevRel
     email: devrel@nexmo.com
+    url: 'https://developer.nexmo.com/'
 servers:
   - url: https://api.nexmo.com/v3
 paths:

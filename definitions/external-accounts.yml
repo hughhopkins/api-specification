@@ -5,9 +5,9 @@ info:
   description: 'The External Accounts API is used to manage accounts for Viber Service Messages, Facebook Messenger and Whatsapp for use in the [Messages](https://developer.nexmo.com/messages/overview) and [Dispatch](https://developer.nexmo.com/dispatch/overview) APIs.'
   x-label: Developer Preview
   contact:
-    name: Nexmo
-    url: 'https://developer.nexmo.com/'
+    name: Nexmo DevRel
     email: devrel@nexmo.com
+    url: 'https://developer.nexmo.com/'
 servers:
 - url: https://api.nexmo.com/beta/chatapp-accounts
 

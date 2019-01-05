@@ -15,20 +15,15 @@ info:
 
     * Ensuring that you can reach your users at any time because you have their correct phone number
   contact:
-    name: Nexmo.com
+    name: Nexmo DevRel
     email: devrel@nexmo.com
     url: 'https://developer.nexmo.com/'
-    x-twitter: Nexmo
   termsOfService: 'https://www.nexmo.com/terms-of-use'
   license:
     name: The MIT License (MIT)
     url: 'https://opensource.org/licenses/MIT'
-  x-logo:
-    url: 'https://twitter.com/Nexmo/profile_image?size=original'
-  x-apiClientRegistration: 'https://dashboard.nexmo.com/sign-up'
 externalDocs:
   url: 'https://developer.nexmo.com/api/verify'
-  x-sha1: 481de32ea146584aabec4b76f62a86661f383078
 security:
   - apiKey: []
     apiSecret: []
@@ -742,7 +737,6 @@ components:
     apiKey:
       type: apiKey
       name: api_key
-      required: true
       in: query
       description: >-
         You can find your API key in your Nexmo account [developer
@@ -750,7 +744,6 @@ components:
     apiSecret:
       type: apiKey
       name: api_secret
-      required: true
       in: query
       description: >-
         You can find your API secret in your Nexmo account [developer

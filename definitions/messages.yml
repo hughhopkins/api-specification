@@ -2,11 +2,16 @@ openapi: "3.0.0"
 info:
   version: 1.0.0
   title: Messages API
+  contact:
+    name: Nexmo DevRel
+    email: devrel@nexmo.com
+    url: 'https://developer.nexmo.com/'
 servers:
   - url: https://rest.nexmo.com
 paths:
   /search/message:
     get:
+      operationId: searchMessage
       summary: Retrieve information about a single messages that you sent using SMS API or were received on your number.
       parameters:
         - name: id

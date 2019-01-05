@@ -6,14 +6,13 @@ info:
   title: Nexmo Conversation API
   description: 'The Nexmo Conversation API enables you to build conversation features where communication can take place across multiple mediums including IP Messaging, PSTN Voice, SMS and WebRTC Audio and Video. The context of the conversations is maintained though each communication event taking place within a conversation, no matter the medium.'
   contact:
-    name: Nexmo Support
+    name: Nexmo DevRel
+    email: devrel@nexmo.com
     url: 'https://developer.nexmo.com/'
-    email: ea-support@nexmo.com
   x-label: Developer Preview
 paths:
   /conversations:
     post:
-      x-swagger-router-controller: createConversation
       operationId: createConversation
       tags:
         - conversation
@@ -24,7 +23,6 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/Conversation'
     get:
-      x-swagger-router-controller: listConversations
       operationId: listConversations
       tags:
         - conversation
@@ -88,7 +86,6 @@ paths:
     parameters:
       - $ref: '#/components/parameters/conversation_id'
     put:
-      x-swagger-router-controller: conversations
       operationId: replaceConversation
       tags:
         - conversation
@@ -99,7 +96,6 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/Conversation'
     get:
-      x-swagger-router-controller: retrieveConversation
       operationId: retrieveConversation
       tags:
         - conversation
@@ -162,7 +158,6 @@ paths:
                 required:
                   - uuid
     delete:
-      x-swagger-router-controller: deleteConversation
       operationId: deleteConversation
       tags:
         - conversation
@@ -174,7 +169,6 @@ paths:
     parameters:
       - $ref: '#/components/parameters/conversation_id'
     post:
-      x-swagger-router-controller: createEvent
       operationId: createEvent
       tags:
         - event
@@ -213,7 +207,6 @@ paths:
                   href:
                     $ref: '#/components/schemas/href_event'
     get:
-      x-swagger-router-controller: getEvents
       operationId: getEvents
       tags:
         - event
@@ -232,7 +225,6 @@ paths:
       - $ref: '#/components/parameters/conversation_id'
       - $ref: '#/components/parameters/event_id'
     get:
-      x-swagger-router-controller: getEvent
       operationId: getEvent
       tags:
         - event
@@ -245,7 +237,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/event_retrieved'
     delete:
-      x-swagger-router-controller: deleteEvent
       operationId: deleteEvent
       tags:
         - event
@@ -257,7 +248,6 @@ paths:
     parameters:
       - $ref: '#/components/parameters/conversation_id'
     get:
-      x-swagger-router-controller: members
       operationId: getMembers
       tags:
         - member
@@ -286,7 +276,6 @@ paths:
                     - user_name
                     - state
     post:
-      x-swagger-router-controller: members
       operationId: createMember
       tags:
         - member
@@ -342,7 +331,6 @@ paths:
       - $ref: '#/components/parameters/conversation_id'
       - $ref: '#/components/parameters/member_id'
     get:
-      x-swagger-router-controller: members
       operationId: getMember
       tags:
         - member
@@ -359,7 +347,6 @@ paths:
                   href:
                     $ref: '#/components/schemas/href_member'
     put:
-      x-swagger-router-controller: members
       operationId: updateMember
       tags:
         - member
@@ -385,7 +372,6 @@ paths:
                 channel:
                   $ref: '#/components/schemas/channel'
     delete:
-      x-swagger-router-controller: members
       operationId: deleteMember
       tags:
         - member
@@ -395,7 +381,6 @@ paths:
           $ref: '#/components/responses/SuccessEmptyJSON'
   /users:
     get:
-      x-swagger-router-controller: users
       operationId: getUsers
       tags:
         - user
@@ -417,7 +402,6 @@ paths:
                     href:
                       $ref: '#/components/schemas/href_user'
     post:
-      x-swagger-router-controller: users
       operationId: createUser
       tags:
         - user
@@ -456,7 +440,6 @@ paths:
     parameters:
       - $ref: '#/components/parameters/user_id'
     get:
-      x-swagger-router-controller: users
       operationId: getUser
       tags:
         - user
@@ -478,7 +461,6 @@ paths:
                     type: string
                     example: 'https://api.nexmo.com/beta/users/USR-63f61863-4a51-4f6b-86e1-46edebio0391'
     put:
-      x-swagger-router-controller: users
       operationId: updateUser
       tags:
         - user
@@ -508,7 +490,6 @@ paths:
                 channels:
                   $ref: '#/components/schemas/channel'
     delete:
-      x-swagger-router-controller: users
       operationId: deleteUser
       tags:
         - user
@@ -520,7 +501,6 @@ paths:
     parameters:
       - $ref: '#/components/parameters/user_id'
     get:
-      x-swagger-router-controller: users
       operationId: getuserConversations
       tags:
         - user
@@ -561,7 +541,6 @@ paths:
                           $ref: '#/components/schemas/timestamp'
   /legs:
     get:
-      x-swagger-router-controller: listLegs
       operationId: listLegs
       tags:
         - leg
@@ -665,7 +644,6 @@ paths:
     parameters:
       - $ref: '#/components/parameters/leg_id'
     delete:
-      x-swagger-router-controller: deleteLeg
       operationId: deleteLeg
       tags:
         - leg
@@ -1007,7 +985,6 @@ components:
       in: path
       required: true
       description: Leg ID
-      x-example: 6e99034ce755c5ad7fde645a46d140a4
       schema:
         type: string
     user_id:
@@ -1015,7 +992,6 @@ components:
       in: path
       required: true
       description: User ID
-      x-example: USR-00092382-3017-4abb-8306-4bee9e772f7f
       schema:
         type: string
     conversation_id:
@@ -1024,7 +1000,6 @@ components:
       required: true
       description: Conversation ID
       example: CON-f972836a-550f-45fa-956c-12a2ab5b7d22
-      x-example: CON-f972836a-550f-45fa-956c-12a2ab5b7d22
       schema:
         type: string
     member_id:
@@ -1032,7 +1007,6 @@ components:
       in: path
       required: true
       description: Member ID
-      x-example: MEM-f972836a-550f-45fa-956c-12a2ab5b7d22
       schema:
         type: string
     event_id:
@@ -1040,7 +1014,6 @@ components:
       in: path
       description: Event ID
       required: true
-      x-example: '5'
       schema:
         type: string
     date_start:

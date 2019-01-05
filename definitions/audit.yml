@@ -6,17 +6,13 @@ info:
   description: >
     Nexmo's Audit API allows you to view details of changes to your account.
   contact:
-    name: Nexmo.com
+    name: Nexmo DevRel
     email: devrel@nexmo.com
     url: 'https://developer.nexmo.com/'
-    x-twitter: Nexmo
   termsOfService: 'https://www.nexmo.com/terms-of-use'
   license:
     name: The MIT License (MIT)
     url: 'https://opensource.org/licenses/MIT'
-  x-logo:
-    url: 'https://twitter.com/Nexmo/profile_image?size=original'
-  x-apiClientRegistration: 'https://dashboard.nexmo.com/sign-up'
 
 servers:
   - url: https://api.nexmo.com
