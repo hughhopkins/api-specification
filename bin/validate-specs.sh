@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
 HAS_FAILURE=0
 
-COMMAND="speccy lint"
-# We don't have tags in every OAS
-COMMAND="$COMMAND -s openapi-tags"
-# Some operations don't need to be grouped
-COMMAND="$COMMAND -s operation-tags"
-# Sometimes we set default and example to the same value. We should fix this in the future
-COMMAND="$COMMAND -s default-and-example-are-redundant"
-# Our tag order is respected when rendering in the sidebar. We don't want them alphabetical
-COMMAND="$COMMAND -s openapi-tags-alphabetical"
+COMMAND="spectral lint -v"
 
-for i in $(ls definitions/*.yml); do
+DOCS=$1
+
+if [[ -z "$DOCS" ]]; then
+  DOCS=$(find definitions -name '*.yml' -not -path "*definitions/common*")
+fi
+
+for i in $DOCS; do
   echo -n "$i "
 
   OUTPUT=$($COMMAND $i 2>&1)

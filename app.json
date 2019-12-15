@@ -1,0 +1,27 @@
+{
+  "addons": [
+
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/ruby"
+    }
+  ],
+  "env": {
+      "OAS_CI": {
+          "description": "Disable the OAS constraint in the renderer to allow all available definitions",
+          "value": "true"
+      },
+      "OAS_PATH": "./"
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "name": "api-specification",
+  "scripts": {
+  },
+  "stack": "heroku-18"
+}

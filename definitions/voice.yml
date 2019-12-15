@@ -1,10 +1,11 @@
 ---
 openapi: 3.0.0
 info:
-  version: 1.0.1
+  version: 1.2.3
   title: Voice API
-  description: The Voice API lets you create outboud calls, control in progress calls
-    and get information about historical calls.
+  description: The Voice API lets you create outbound calls, control in-progress calls
+    and get information about historical calls. More information about the Voice API
+    can be found at <https://developer.nexmo.com/voice/voice-api/overview>.
   contact:
     name: Nexmo DevRel
     email: devrel@nexmo.com
@@ -27,7 +28,6 @@ paths:
               required:
                 - to
                 - from
-                - answer_url
                 - event_url
               properties:
                 to:
@@ -37,11 +37,30 @@ paths:
                     - "$ref": "#/components/schemas/EndpointPhone"
                     - "$ref": "#/components/schemas/EndpointSip"
                     - "$ref": "#/components/schemas/EndpointWebsocket"
+                    - "$ref": "#/components/schemas/EndpointVBCExtension"
                 from:
                   "$ref": "#/components/schemas/EndpointPhone"
+                ncco:
+                  description: |
+                    **Required** unless `answer_url` is provided.
+
+                    The [Nexmo Call Control Object](/voice/voice-api/ncco-reference) to use for this call.
+                  type: array
+                  x-nexmo-developer-collection-description-shown: true
+                  example: |
+                      [
+                        {
+                          "action":"talk",
+                          "text": "Hello World"
+                        }
+                      ]
+                  items:
+                    type: object
                 answer_url:
-                  description: The webhook endpoint where you provide the Nexmo Call
-                    Control Object that governs this call.
+                  description: |
+                    **Required** unless `ncco` is provided.
+
+                    The webhook endpoint where you provide the [Nexmo Call Control Object](/voice/voice-api/ncco-reference) that governs this call.
                   type: array
                   x-nexmo-developer-collection-description-shown: true
                   example: '["https://example.com/answer"]'
@@ -56,7 +75,7 @@ paths:
                   - GET
                 event_url:
                   description: The webhook endpoint where call progress events are
-                    sent to. For more information about the values sent, see callback
+                    sent to. For more information about the values sent, see [Event webhook](/voice/voice-api/webhook-reference#event-webhook).
                   type: array
                   x-nexmo-developer-collection-description-shown: true
                   example: '["https://example.com/event"]'
@@ -333,24 +352,38 @@ paths:
                   - earmuff
                   - unearmuff
                   - transfer
+                  description: The action to apply to the in-progress call
                 destination:
                   type: object
-                  description: Required when action is `transfer`
+                  description: Required when `action` is `transfer`
+                  x-nexmo-developer-collection-description-shown: true
                   properties:
                     type:
                       type: string
                       example: ncco
-                      enum:
-                      - ncco
-                    url:
+                      description: Always `ncco`
                       x-nexmo-developer-collection-description-shown: true
+                    url:                      
                       example: '["https://example.com/ncco.json"]'
                       type: array
                       items:
                         type: string
+                      description: The URL that Nexmo makes a request to. Must return an NCCO.
+                      x-nexmo-developer-collection-description-shown: true
+                    ncco:
+                      example: '[{"action": "talk", "text": "hello world"}]'
+                      type: array
+                      items:
+                        type: object
+                      description: Can be used instead of `url` for the `transfer` action only.
+                      x-nexmo-developer-collection-description-shown: true
       responses:
         '204':
           description: No Content
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
   "/calls/{uuid}/stream":
     parameters:
     - in: path
@@ -358,7 +391,7 @@ paths:
       schema:
         type: string
       required: true
-      description: UUID of the Call
+      description: UUID of the Call Leg
       example: 63f61863-4a51-4f6b-86e1-46edebcf9356
     put:
       security:
@@ -432,7 +465,7 @@ paths:
       schema:
         type: string
       required: true
-      description: UUID of the Call
+      description: UUID of the Call Leg
       example: 63f61863-4a51-4f6b-86e1-46edebcf9356
     put:
       security:
@@ -505,7 +538,7 @@ paths:
       schema:
         type: string
       required: true
-      description: UUID of the Call
+      description: UUID of the Call Leg
       example: 63f61863-4a51-4f6b-86e1-46edebcf9356
     put:
       security:
@@ -590,7 +623,7 @@ components:
     uuid:
       type: string
       format: uuid
-      title: The UUID of the Call
+      title: The UUID of the Call Leg
       example: 63f61863-4a51-4f6b-86e1-46edebcf9356
       description: >-
           The unique identifier for this call leg. The UUID is created when
@@ -638,6 +671,26 @@ components:
       example: started
       description: The status of the call. [See possible values](https://developer.nexmo.com/voice/voice-api/guides/call-flow#event-objects)
 
+    name_user:
+      type: string
+      example: my_user_name
+      description: Unique name for a user
+
+    EndpointApp:
+      type: object
+      description: Connect to an App User
+      required:
+        - type
+        - user
+      properties:
+        type:
+          type: string
+          example: app
+          description: The type of connection. Must be `app`
+        user:
+          type: string
+          example: jamie
+          description: The username to connect to
     EndpointPhone:
       type: object
       description: Connect to a Phone (PSTN) number
@@ -648,8 +701,6 @@ components:
           type: string
           example: phone
           description: The type of connection. Must be `phone`
-          enum:
-            - phone
         number:
           "$ref": "#/components/schemas/AddressE164"
         dtmfAnswer:
@@ -667,8 +718,6 @@ components:
           description: The type of connection. Must be `websocket`
           type: string
           example: websocket
-          enum:
-            - websocket
         uri:
           "$ref": "#/components/schemas/AddressWebsocket"
         content-type:
@@ -695,10 +744,22 @@ components:
           description: The type of connection. Must be `sip`
           type: string
           example: sip
-          enum:
-            - sip
         uri:
           "$ref": "#/components/schemas/AddressSip"
+    EndpointVBCExtension:
+      type: object
+      description: Connect to a VBC extension
+      required:
+        - type
+        - extension
+      properties:
+        type:
+          type: string
+          example: vbc
+          description: The type of connection. Must be `vbc`
+        extension:
+          type: string
+          example: '1234'         
     AddressE164:
       description: The phone number to connect to
       type: string
@@ -711,7 +772,7 @@ components:
       type: string
       minLength: 1
       maxLength: 50
-      example: rebekka@sip.example.com
+      example: sip:rebekka@sip.example.com
     AddressWebsocket:
       type: string
       minLength: 1

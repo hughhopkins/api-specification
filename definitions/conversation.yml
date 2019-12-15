@@ -2,7 +2,7 @@ openapi: 3.0.0
 servers:
   - url: 'https://api.nexmo.com/beta'
 info:
-  version: 1.6.0
+  version: 1.7.4
   title: Nexmo Conversation API
   description: 'The Nexmo Conversation API enables you to build conversation features where communication can take place across multiple mediums including IP Messaging, PSTN Voice, SMS and WebRTC Audio and Video. The context of the conversations is maintained though each communication event taking place within a conversation, no matter the medium.'
   contact:
@@ -28,6 +28,13 @@ paths:
         - conversation
       summary: List conversations
       description: >
+          <div class="Vlt-callout Vlt-callout--warning">
+          <i></i>
+          <div class="Vlt-callout__content">
+          <p><strong>This API endpoint is deprecated. Please use <a href="/api/conversation.v2#get-conversations">/beta2/conversations</a></strong>.<br />This endpoint will return a maximum of 100 items.</p>
+          </div>
+          </div>
+
           List all conversations associated with your application. 
           This endpoint required an admin JWT. To find all conversations for
           the currently logged in user, see [GET /users/:id/conversations](#getuserConversations)
@@ -165,6 +172,26 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/SuccessEmptyJSON'
+  '/conversations/{conversation_id}/record':
+    servers:
+      - url: 'https://api.nexmo.com/v1'
+        description: Override base path for the PUT /conversations/{conversation_id}/record operation
+    parameters:
+      - $ref: '#/components/parameters/conversation_id'
+    put:
+      operationId: recordConversation
+      tags:
+        - conversation
+      summary: Record a conversation
+      responses:
+        '204':
+          description: 'No Content'
+        '404':
+          description: 'Not Found'
+        '400':
+          description: 'Bad Request'
+      requestBody:
+        $ref: '#/components/requestBodies/RecordConversation'
   '/conversations/{conversation_id}/events':
     parameters:
       - $ref: '#/components/parameters/conversation_id'
@@ -208,6 +235,14 @@ paths:
                     $ref: '#/components/schemas/href_event'
     get:
       operationId: getEvents
+      description: >
+          <div class="Vlt-callout Vlt-callout--warning">
+          <i></i>
+          <div class="Vlt-callout__content">
+          <p><strong>This API endpoint is deprecated. Please use <a href="/api/conversation.v2#get-events">/beta2/events</a></strong><br />This endpoint will return a maximum of 100 items.</p>
+          </div>
+          </div>
+
       tags:
         - event
       summary: List events
@@ -249,6 +284,13 @@ paths:
       - $ref: '#/components/parameters/conversation_id'
     get:
       operationId: getMembers
+      description: >
+          <div class="Vlt-callout Vlt-callout--warning">
+          <i></i>
+          <div class="Vlt-callout__content">
+          <p><strong>This API endpoint is deprecated. Please use <a href="/api/conversation.v2#get-members">/beta2/members</a></strong><br />This endpoint will return a maximum of 100 items.</p>
+          </div>
+          </div>
       tags:
         - member
       summary: List members
@@ -382,6 +424,13 @@ paths:
   /users:
     get:
       operationId: getUsers
+      description: >
+          <div class="Vlt-callout Vlt-callout--warning">
+          <i></i>
+          <div class="Vlt-callout__content">
+          <strong>This API endpoint is deprecated. Please use <a href="/api/conversation.v2#get-users">/beta2/users</a><br />This endpoint will return a maximum of 100 items.</strong>
+          </div>
+          </div>
       tags:
         - user
       summary: List users
@@ -434,8 +483,6 @@ paths:
                   $ref: '#/components/schemas/display_name_user'
                 image_url:
                   $ref: '#/components/schemas/image_url'
-                channels:
-                  $ref: '#/components/schemas/channel'
   '/users/{user_id}':
     parameters:
       - $ref: '#/components/parameters/user_id'
@@ -455,8 +502,6 @@ paths:
                     $ref: '#/components/schemas/user_id'
                   name:
                     $ref: '#/components/schemas/name_user'
-                  channels:
-                    type: object
                   href:
                     type: string
                     example: 'https://api.nexmo.com/beta/users/USR-63f61863-4a51-4f6b-86e1-46edebio0391'
@@ -578,7 +623,7 @@ paths:
                     description: 'A list of conversation objects. See the [get details of a specific conversation](#retrieveConversation) response fields for a description of the nested objects'
                     type: object
                     properties:
-                      conversations:
+                      legs:
                         type: array
                         items:
                           type: object
@@ -667,6 +712,39 @@ components:
             member_id:
                 $ref: '#/components/schemas/member_id'
  
+    action:
+      type: string
+      example: start
+      description: Recording Action
+      enum:
+        - start
+        - stop
+    event_url:
+      type: array
+      items: 
+        type: string
+        format: url
+      example: '["https://example.com/event"]'
+      x-nexmo-developer-collection-description-shown: true
+      description: The webhook endpoint where recording progress events are sent to.
+    event_method:
+      type: string
+      description: The HTTP method used to send event information to event_url.
+      example: POST
+      default: POST
+    split:
+      type: string
+      description: Record the sent and received audio in separate channels of a stereo recording
+      example: conversation
+      default: conversation
+    format:
+      type: string
+      description: Record the Conversation in a specific format.
+      example: mp3
+      default: mp3
+      enum:
+        - mp3
+        - wav
     leg_state:
       type: string
       example: terminated
@@ -716,37 +794,37 @@ components:
       type: string
       format: url
       example: 'https://api.nexmo.com/beta/converations/CON-63f61863-4a51-4f6b-86e1-46edebio0391'
-      description: A link towards a resources included in Conversation Service API
+      description: A link towards a resources included in Conversation API
     href_conversation:
       type: string
       format: url
       example: 'https://api.nexmo.com/beta/converations/CON-63f61863-4a51-4f6b-86e1-46edebio0391'
-      description: A link towards a conversation included in Conversation Service API
+      description: A link towards a conversation included in Conversation API
     href_conversations_list:
       type: string
       format: url
       example: 'https://api.nexmo.com/beta/converations?page_size=2&record_index=10&'
-      description: A link towards a conversations list included in Conversation Service API
+      description: A link towards a conversations list included in Conversation API
     href_member:
       type: string
       format: url
       example: 'https://api.nexmo.com/beta/converations/CON-63f61863-4a51-4f6b-86e1-46edebio0391/members/MEM-63f61863-4a51-4f6b-86e1-46edebio0391'
-      description: A link towards a member included in Conversation Service API
+      description: A link towards a member included in Conversation API
     href_user:
       type: string
       format: url
       example: 'https://api.nexmo.com/beta/converations/USR-63f61863-4a51-4f6b-86e1-46edebio0391'
-      description: A link towards a user included in Conversation Service API
+      description: A link towards a user included in Conversation API
     href_event:
       type: string
       format: url
       example: 'https://api.nexmo.com/beta/converations/CON-63f61863-4a51-4f6b-86e1-46edebio0391/events/1'
-      description: A link towards a conversation event included in Conversation Service API
+      description: A link towards a conversation event included in Conversation API
     href_rtc:
       type: string
       format: url
       example: 'https://api.nexmo.com/beta/converations/CON-63f61863-4a51-4f6b-86e1-46edebio0391/rtc/7777777777777'
-      description: A link towards a rtc (leg) included in Conversation Service API
+      description: A link towards a rtc (leg) included in Conversation API
     event_id:
       type: string
       example: '5'
@@ -783,13 +861,10 @@ components:
       type: object
       description: Conversation properties
       properties:
-        speaking_detection_level:
-          type: number
-          example: 0
         ttl:
           type: number
           example: 60
-          description: 'Time to leave'
+          description: 'Time to leave. After how many seconds an empty conversation is deleted.'
     _links_conversations_list:
       type: object
       description: 'A series of links between resources in this API in the http://stateless.co/hal_specification.html.'
@@ -903,30 +978,32 @@ components:
         - phone
         - sip
         - websocket
+        - vbc
     channel:
       type: object
-      description: 'When a user joins a conversation as a member, they can have one channel per membership. Channels can be `app`, `phone`, `sip`, or `websocket`'
+      description: 'A user who joins a conversation as a member can have one channel per membership type. Channels can be `app`, `phone`, `sip`, `websocket`, or `vbc`'
       properties:
         type:
           $ref: '#/components/schemas/channel_type'
         leg_id:
           $ref: '#/components/schemas/leg_id'
         from:
-          type: object
-          properties:
-            type:
-              $ref: '#/components/schemas/channel_type'
-            number:
-              $ref: '#/components/schemas/channel_number'
+          oneOf:
+            - "$ref": "voice.yml#/components/schemas/EndpointApp"
+            - "$ref": "voice.yml#/components/schemas/EndpointPhone"
+            - "$ref": "voice.yml#/components/schemas/EndpointSip"
+            - "$ref": "voice.yml#/components/schemas/EndpointWebsocket"
+            - "$ref": "voice.yml#/components/schemas/EndpointVBCExtension"
         to:
-          type: object
-          properties:
-            type:
-              $ref: '#/components/schemas/channel_type'
-            number:
-              $ref: '#/components/schemas/channel_number'
+          oneOf:
+            - "$ref": "voice.yml#/components/schemas/EndpointApp"
+            - "$ref": "voice.yml#/components/schemas/EndpointPhone"
+            - "$ref": "voice.yml#/components/schemas/EndpointSip"
+            - "$ref": "voice.yml#/components/schemas/EndpointWebsocket"
+            - "$ref": "voice.yml#/components/schemas/EndpointVBCExtension"
         leg_ids:
           type: array
+          description: Leg ids associated with this Channel. The first item in the array represents the main active Leg. The second item, if exists, represents a screen-share Leg.
           items:
             properties:
               leg_id:
@@ -1110,6 +1187,25 @@ components:
                 $ref: '#/components/schemas/numbers'
               properties:
                 $ref: '#/components/schemas/conversation_properties'
+    RecordConversation:
+      description: Record Conversation Request Payload Object
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              action:
+                $ref: '#/components/schemas/action'
+              event_url:
+                $ref: '#/components/schemas/event_url'
+              event_method:
+                $ref: '#/components/schemas/event_method'
+              split:
+                $ref: '#/components/schemas/split'
+              format:
+                $ref: '#/components/schemas/format'
+            required:
+              - action
   securitySchemes:
     bearerAuth:
       type: http
